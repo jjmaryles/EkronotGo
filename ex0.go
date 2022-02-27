@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 func main() {
@@ -16,7 +15,8 @@ func main() {
 
 	var vmFiles []string = GetVmFiles(path)
 
-	outfile, err1 := os.Create("ex0.asm")
+	var outname string = OutfileName(path)
+	outfile, err1 := os.Create(outname)
 	if err1 != nil {
 		log.Fatal(err1)
 	}
@@ -37,7 +37,6 @@ func main() {
 		scanner := bufio.NewScanner(current)
 		for scanner.Scan() {
 			line = scanner.Text()
-			line := strings.Fields(line)
 			println(line)
 		}
 
@@ -69,10 +68,24 @@ func GetVmFiles(folder string) []string {
 	return res
 }
 
-func HandleBuy(a string, b string, c string) {
-
+func HandleBuy(ProductName string, Amount int, Price float64) {
+	writefile, err1 := os.Open("ex0.asm")
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+	writefile.WriteString("### BUY " + ProductName + " ###\n")
+	writefile.WriteString(fmt.Sprintf("%f", float64(Amount)*Price) + "/n")
 }
 
-func HandleSell(a string, b string, c string) {
+func HandleCell(ProductName string, Amount int, Price float64) {
+	writefile, err1 := os.Open("ex0.asm")
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+	writefile.WriteString("### CELL " + ProductName + " ###\n")
+	writefile.WriteString(fmt.Sprintf("%f", float64(Amount)*Price) + "/n")
+}
 
+func OutfileName(path string) string {
+	return filepath.Base(path) + ".asm"
 }
