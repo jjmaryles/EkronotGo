@@ -1,5 +1,6 @@
 package main
 
+//C:\Users\jjmar\GolandProjects\Go-Compiler\ex0
 import (
 	"bufio"
 	"fmt"
@@ -9,8 +10,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-var outfileName string //global variable as outfile name
 
 func main() {
 	//get filepath input
@@ -22,13 +21,15 @@ func main() {
 	vmFiles := GetVmFiles(path)
 
 	//create output file to write to
-	outfileName = filepath.Base(path) + ".asm"
+	outfileName := filepath.Base(path) + ".asm"
 	outfile, err1 := os.Create(outfileName)
 	if err1 != nil {
 		log.Fatal(err1)
 	}
 	defer outfile.Close()
 
+	totalBuy := 0.0
+	totalCell := 0.0
 	var name string
 	for _, file := range vmFiles {
 		//write filename without .vm
@@ -47,12 +48,14 @@ func main() {
 		for scanner.Scan() {
 			line := strings.Split(scanner.Text(), " ")
 			amount, _ := strconv.Atoi(line[2])
-			price, _ := strconv.ParseFloat(line[3], 32)
+			price, _ := strconv.ParseFloat(line[3], 64)
 			if line[0] == "buy" {
-				HandleBuy(line[1], amount, price)
+				HandleBuy(line[1], amount, price, outfile)
+				totalBuy += float64(amount) * price
 			}
 			if line[0] == "cell" {
-				HandleCell(line[1], amount, price)
+				HandleCell(line[1], amount, price, outfile)
+				totalCell += float64(amount) * price
 			}
 		}
 
@@ -60,6 +63,11 @@ func main() {
 			log.Fatal(err2)
 		}
 	}
+	fmt.Println("TOTAL BUY: " + strconv.FormatFloat(totalBuy, 'f', -1, 64))
+	fmt.Println("TOTAL CELL: " + strconv.FormatFloat(totalCell, 'f', -1, 64))
+	outfile.WriteString("TOTAL BUY: " + strconv.FormatFloat(totalBuy, 'f', -1, 64) + "\n")
+	outfile.WriteString("TOTAL CELL: " + strconv.FormatFloat(totalCell, 'f', -1, 64) + "\n")
+
 }
 
 // GetVmFiles function returns of list of ".vm" files in a specified directory
@@ -86,21 +94,13 @@ func GetVmFiles(folder string) []string {
 }
 
 // HandleBuy Handle function for "buy"
-func HandleBuy(ProductName string, Amount int, Price float64) {
-	writefile, err1 := os.Open(outfileName)
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-	writefile.WriteString("### BUY " + ProductName + " ###\n")
-	writefile.WriteString(strconv.FormatFloat(float64(Amount)*Price, 'E', -1, 64) + "/n")
+func HandleBuy(ProductName string, Amount int, Price float64, outfile *os.File) {
+	outfile.WriteString("### BUY " + ProductName + " ###\n")
+	outfile.WriteString(strconv.FormatFloat(float64(Amount)*Price, 'f', -1, 64) + "\n")
 }
 
-//Handle function for "cell"
-func HandleCell(ProductName string, Amount int, Price float64) {
-	writefile, err1 := os.Open(outfileName)
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-	writefile.WriteString("### CELL " + ProductName + " ###\n")
-	writefile.WriteString(strconv.FormatFloat(float64(Amount)*Price, 'E', -1, 64) + "/n")
+// HandleCell Handle function for "cell"
+func HandleCell(ProductName string, Amount int, Price float64, outfile *os.File) {
+	outfile.WriteString("$$$ CELL " + ProductName + " $$$\n")
+	outfile.WriteString(strconv.FormatFloat(float64(Amount)*Price, 'f', -1, 64) + "\n")
 }
