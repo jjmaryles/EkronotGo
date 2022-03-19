@@ -31,14 +31,14 @@ func main() {
 		outFiles = append(outFiles, out.Name())
 	}
 
-	var toWrite string
+	var toWrite []string
+	var fileName string
 	for _, file := range vmFiles {
 		current, err2 := os.Open(file)
 		if err2 != nil {
 			log.Fatal(err2)
 		}
 		defer current.Close()
-
 		//read the file
 		scanner := bufio.NewScanner(current)
 		//for each line, check if it is "buy" or "cell" and call corresponding "Handle" functions
@@ -48,7 +48,7 @@ func main() {
 			case "push":
 				switch line[1] {
 				case "local":
-					toWrite = PopLocalX(line)
+					toWrite = PopLocalX(line, file)
 				case "argument":
 				case "this":
 				case "that":
@@ -104,6 +104,6 @@ func GetVmFiles(folder string) []string {
 	return res
 }
 
-func PopLocalX(command []string) string {
+func PopLocalX(command []string, writeFile string) []string {
 
 }
