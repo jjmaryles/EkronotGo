@@ -103,7 +103,3 @@ func GetVmFiles(folder string) []string {
 	}
 	return res
 }
-
-func PopLocalX(command []string, writeFile string) []string {
-
-}
