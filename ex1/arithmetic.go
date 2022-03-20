@@ -1,6 +1,6 @@
 package main
 import (
-	"strings"
+	 "strings"
 	"fmt"
 )
 func writeArithmetic(line []string) {
