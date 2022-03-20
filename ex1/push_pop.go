@@ -1,20 +1,12 @@
 package main
 
 import (
-	"log"
-	"os"
 	"strconv"
 )
 
-//region locArgThisThat
+//region group1-locArgThisThat
 //region local
-func PushLocalX(command []string, file string) []string {
-	writeFile, err1 := os.Open(file)
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-	defer writeFile.Close()
-
+func PushLocalX(command []string) []string {
 	var res []string
 	res = append(res, "@"+command[2])
 	res = append(res, "D=A")
@@ -33,12 +25,7 @@ func PushLocalX(command []string, file string) []string {
 //endregion local
 
 //region argument
-func PushArgumentX(command []string, file string) []string {
-	writeFile, err1 := os.Open(file)
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-	defer writeFile.Close()
+func PushArgumentX(command []string) []string {
 
 	var res []string
 	res = append(res, "@ARG")
@@ -57,12 +44,7 @@ func PushArgumentX(command []string, file string) []string {
 //endregion argument
 
 //region this
-func PopThisX(command []string, file string) []string {
-	writeFile, err1 := os.Open(file)
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-	defer writeFile.Close()
+func PopThisX(command []string) []string {
 
 	var res []string
 	res = append(res, "@SP")
@@ -85,24 +67,136 @@ func PopThisX(command []string, file string) []string {
 
 //endregion this
 
-//endregion local,argument,this,that
+//region that
+func PushThatX(command []string) []string {
 
-//region temp
-//endregion temp
 
-//region static
-//endregion static
+	var res []string
+	res = append(res, "@"+command[2])
+	res = append(res, "D=A")
+	res = append(res, "@THAT")
+	res = append(res, "A=M+D")
+	res = append(res, "D=M")
+	res = append(res, "@SP")
+	res = append(res, "A=M")
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M+1")
 
-//region pointer
-//endregion pointer
+	return res
+}
+//endregion that
+//endregion group1-locArgThisThat
 
-//region constant
-func PushConstantX(command []string, file string) []string {
-	writeFile, err1 := os.Open(file)
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-	defer writeFile.Close()
+//region group2-temp
+func PopTempX(command []string) []string {
+
+	var res []string
+	res = append(res, "@SP")
+	res = append(res, "A=M-1")
+	res = append(res, "D=M")
+
+	num, _ := strconv.Atoi(command[2])
+	res = append(res, "@"+strconv.Itoa(5+num))
+
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M-1")
+
+	return res
+}
+//endregion group2-temp
+
+//region group3-static
+func PopStaticX(command []string, fileName string) []string {
+
+	var res []string
+	res = append(res, "@SP")
+	res = append(res, "A=M-1")
+	res = append(res, "D=M")
+	res = append(res, "@" + fileName + "." + command[2])
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M-1")
+
+	return res
+}
+
+func PushStaticX(command []string, fileName string) []string {
+
+	var res []string
+	res = append(res, "@" + fileName + "." + command[2])
+	res = append(res, "D=M")
+	res = append(res, "@SP")
+	res = append(res, "A=M")
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M+1")
+
+	return res
+}
+//endregion group3-static
+
+//region group4-pointer0,1
+func PopPointer0(command []string) []string {
+
+	var res []string
+	res = append(res, "@SP")
+	res = append(res, "A=M-1")
+	res = append(res, "D=M")
+	res = append(res, "@THIS")
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M-1")
+
+	return res
+}
+
+func PopPointer1(command []string) []string {
+
+	var res []string
+	res = append(res, "@SP")
+	res = append(res, "A=M-1")
+	res = append(res, "D=M")
+	res = append(res, "@THAT")
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M-1")
+
+	return res
+}
+
+func PushPointer0(command []string) []string {
+
+	var res []string
+	res = append(res, "@THIS")
+	res = append(res, "D=M")
+	res = append(res, "@SP")
+	res = append(res, "A=M")
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M+1")
+
+	return res
+}
+
+func PushPointer1(command []string) []string {
+
+	var res []string
+	res = append(res, "@THAT")
+	res = append(res, "D=M")
+	res = append(res, "@SP")
+	res = append(res, "A=M")
+	res = append(res, "M=D")
+	res = append(res, "@SP")
+	res = append(res, "M=M+1")
+
+	return res
+}
+//endregion group4-pointer0,1
+
+//region group5-constant
+func PushConstantX(command []string) []string {
 
 	var res []string
 	res = append(res, "@"+command[2])
@@ -116,4 +210,4 @@ func PushConstantX(command []string, file string) []string {
 	return res
 }
 
-//endregion constant
+//endregion group5-constant
