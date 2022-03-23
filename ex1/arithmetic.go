@@ -1,8 +1,8 @@
 package main
 import (
-	 "strings"
 	"fmt"
 )
+/*
 func writeArithmetic(line []string) {
 	firstWord := line[0]
 	var res []string
@@ -84,4 +84,5 @@ func writeArithmetic(line []string) {
 
 
 }
+ */
 

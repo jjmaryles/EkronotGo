@@ -1,5 +1,6 @@
 package main
 
+/*
 func WritePush(command []string, fileName string) []string {
 	var res []string
 	val := command[2]
@@ -28,6 +29,8 @@ func WritePush(command []string, fileName string) []string {
 	return append(res,"@SP","A=M","M=D","@SP","M=M+1")
 }
 
+ */
+/*
 func WritePop(command []string, fileName string) []string {
 	var res []string
 	val := command[2]
@@ -53,3 +56,4 @@ func WritePop(command []string, fileName string) []string {
 	}
 	return append(res,"@R13","M=D","@SP","AM=M-1","D=M","@R13","A=M","M=D")
 }
+*/
