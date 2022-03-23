@@ -1,6 +1,7 @@
 package main
 
 //C:\Users\jjmar\GolandProjects\Go-Compiler\ex0
+//C:\Users\yehos\OneDrive\Desktop\School\SemB\Ekronot\nand2tetris\projects\07C:\Users\yehos\OneDrive\Desktop\School\SemB\Ekronot\nand2tetris\projects\07
 import (
 	"bufio"
 	"fmt"
@@ -19,6 +20,7 @@ func main() {
 	//create list of ".vm" files
 	vmFiles := GetVmFiles(path)
 
+	/*
 	//create output files to write to
 	var outFiles []string
 	for _, file := range vmFiles {
@@ -30,6 +32,7 @@ func main() {
 		defer out.Close()
 		outFiles = append(outFiles, out.Name())
 	}
+	*/
 
 	var toWrite []string
 	var fileName string
@@ -58,7 +61,16 @@ func main() {
 			log.Fatal(err2)
 		}
 
+		currentOut := filepath.Base(NoSuffix(file)) + ".asm"
+		out, err1 := os.Create(currentOut)
+		if err1 != nil {
+			log.Fatal(err1)
+		}
+		defer out.Close()
+		res := strings.Join(toWrite,"")
+		out.WriteString(res)
 	}
+
 }
 
 func NoSuffix(fileName string) string {
@@ -164,6 +176,7 @@ func writeArithmetic(line []string) []string {
 		res = append(res, "D=M\n")
 		res = append(res, "A=A-1\n")
 		res = append(res,  strTemp)
+		res = append(res, "\n")
 		res = append(res, "M=D\n")
 		res = append(res, "D=A+1\n")
 		res = append(res, "@SP\n")
@@ -179,6 +192,7 @@ func writeArithmetic(line []string) []string {
 		res = append(res, "M=M-1\n")
 		res = append(res, "A=M\n")
 		res = append(res,  strTemp)
+		res = append(res, "\n")
 		res = append(res, "D=A+1\n")
 		res = append(res, "@SP\n")
 		res = append(res, "M=D\n")
@@ -199,6 +213,7 @@ func writeArithmetic(line []string) []string {
 		res = append(res, "D=M-D\n")
 		res = append(res, fmt.Sprint("@EQ%d\n", count))
 		res = append(res, strTemp)
+		res = append(res, "\n")
 		res = append(res, "@0\n")
 		res = append(res, "D=-A\n")
 		res = append(res, "@SP\n")
