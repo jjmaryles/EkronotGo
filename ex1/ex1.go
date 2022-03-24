@@ -55,20 +55,20 @@ func main() {
 			case "add","sub","and","or", "neg", "not", "eq", "lt", "gt":
 				toWrite = writeArithmetic(line)
 			}
-		}
 
-		if err2 := scanner.Err(); err2 != nil {
-			log.Fatal(err2)
-		}
+			if err2 := scanner.Err(); err2 != nil {
+				log.Fatal(err2)
+			}
 
-		currentOut := filepath.Base(NoSuffix(file)) + ".asm"
-		out, err1 := os.Create(currentOut)
-		if err1 != nil {
-			log.Fatal(err1)
+			currentOut := filepath.Base(NoSuffix(file)) + ".asm"
+			out, err1 := os.Create(currentOut)
+			if err1 != nil {
+				log.Fatal(err1)
+			}
+			defer out.Close()
+			res := strings.Join(toWrite,"")
+			out.WriteString(res)
 		}
-		defer out.Close()
-		res := strings.Join(toWrite,"")
-		out.WriteString(res)
 	}
 
 }
