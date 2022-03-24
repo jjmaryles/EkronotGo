@@ -1,7 +1,5 @@
 package main
 
-//C:\Users\jjmar\GolandProjects\Go-Compiler\ex0
-//C:\Users\yehos\OneDrive\Desktop\School\SemB\Ekronot\nand2tetris\projects\07C:\Users\yehos\OneDrive\Desktop\School\SemB\Ekronot\nand2tetris\projects\07
 import (
 	"bufio"
 	"fmt"
@@ -20,7 +18,10 @@ func main() {
 	//create list of ".vm" files
 	vmFiles := GetVmFiles(path)
 
+	//open vmFiles to read from
 	var toWrite []string
+
+	//for each vm file
 	for _, file := range vmFiles {
 		current, err2 := os.Open(file)
 		if err2 != nil {
@@ -28,18 +29,20 @@ func main() {
 		}
 		defer current.Close()
 
+		//create a corresponding asm file for translation
 		currentOut := filepath.Base(NoSuffix(file)) + ".asm"
 		out, err1 := os.Create(currentOut)
 		if err1 != nil {
 			log.Fatal(err1)
 		}
 		defer out.Close()
-		//read the file
+
+		//read the vm file
 		scanner := bufio.NewScanner(current)
 		fileName := filepath.Base(NoSuffix(file))
-		//for each line, check if it is "buy" or "cell" and call corresponding "Handle" functions
 		count := 1
 
+		//for each line, translate it
 		for scanner.Scan() {
 			line := strings.Split(scanner.Text(), " ")
 			switch line[0] {
@@ -58,6 +61,7 @@ func main() {
 				log.Fatal(err2)
 			}
 
+			//write the asm code
 			res := strings.Join(toWrite,"")
 			out.WriteString(res)
 		}
