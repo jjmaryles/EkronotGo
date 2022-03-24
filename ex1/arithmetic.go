@@ -14,7 +14,7 @@ func writeArithmetic(line []string) {
 			strTemp = "D=D+M"
 		} else if firstWord == "sub"{
 			strTemp = "D=M-D"
-		} else if firstWord == "and"{
+		} else if firstWord == "and"{m
 			strTemp = "D=D&M"
 		} else if firstWord == "or"{
 			strTemp = "D=D|M"

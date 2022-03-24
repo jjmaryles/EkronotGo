@@ -35,15 +35,22 @@ func main() {
 	*/
 
 	var toWrite []string
-	var fileName string
 	for _, file := range vmFiles {
 		current, err2 := os.Open(file)
 		if err2 != nil {
 			log.Fatal(err2)
 		}
 		defer current.Close()
+
+		currentOut := filepath.Base(NoSuffix(file)) + ".asm"
+		out, err1 := os.Create(currentOut)
+		if err1 != nil {
+			log.Fatal(err1)
+		}
+		defer out.Close()
 		//read the file
 		scanner := bufio.NewScanner(current)
+		fileName := filepath.Base(NoSuffix(file))
 		//for each line, check if it is "buy" or "cell" and call corresponding "Handle" functions
 		for scanner.Scan() {
 			line := strings.Split(scanner.Text(), " ")
@@ -60,17 +67,10 @@ func main() {
 				log.Fatal(err2)
 			}
 
-			currentOut := filepath.Base(NoSuffix(file)) + ".asm"
-			out, err1 := os.Create(currentOut)
-			if err1 != nil {
-				log.Fatal(err1)
-			}
-			defer out.Close()
 			res := strings.Join(toWrite,"")
 			out.WriteString(res)
 		}
 	}
-
 }
 
 func NoSuffix(fileName string) string {
