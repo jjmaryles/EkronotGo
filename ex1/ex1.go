@@ -20,20 +20,6 @@ func main() {
 	//create list of ".vm" files
 	vmFiles := GetVmFiles(path)
 
-	/*
-	//create output files to write to
-	var outFiles []string
-	for _, file := range vmFiles {
-		outName := filepath.Base(NoSuffix(file)) + ".asm"
-		out, err1 := os.Create(outName)
-		if err1 != nil {
-			log.Fatal(err1)
-		}
-		defer out.Close()
-		outFiles = append(outFiles, out.Name())
-	}
-	*/
-
 	var toWrite []string
 	for _, file := range vmFiles {
 		current, err2 := os.Open(file)
@@ -78,6 +64,7 @@ func main() {
 	}
 }
 
+// NoSuffix function returns file name without type
 func NoSuffix(fileName string) string {
 	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
 }
@@ -105,6 +92,7 @@ func GetVmFiles(folder string) []string {
 	return res
 }
 
+// WritePop write function for pop command
 func WritePop(command []string, fileName string) []string {
 	var res []string
 	val := command[2]
@@ -128,9 +116,10 @@ func WritePop(command []string, fileName string) []string {
 	case "temp":
 		res = append(res,"@R5\n","D=A\n","@" + val +"\n","D=D+A\n")
 	}
-	return append(res,"@R13\n","M=D\n","@SP\n","AM=M-1\n","D=M\n","@R13\n","A=M\n","M=D\n")
+	return append(res,"@R13\n","M=D\n","@SP\n","M=M-1\n","D=M\n","@R13\n","A=M\n","M=D\n")
 }
 
+// WritePush write function for push command
 func WritePush(command []string, fileName string) []string {
 	var res []string
 	val := command[2]
@@ -159,6 +148,7 @@ func WritePush(command []string, fileName string) []string {
 	return append(res,"@SP\n","A=M\n","M=D\n","@SP\n","M=M+1\n")
 }
 
+// WriteArithmetic write function for arithmetic command
 func writeArithmetic(line []string, count int) []string {
 	firstWord := line[0]
 	var res []string
