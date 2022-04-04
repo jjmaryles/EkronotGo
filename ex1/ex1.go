@@ -35,12 +35,13 @@ func main() {
 		if err1 != nil {
 			log.Fatal(err1)
 		}
+
 		defer out.Close()
 
 		//read the vm file
 		scanner := bufio.NewScanner(current)
 		fileName := filepath.Base(NoSuffix(file))
-		count := 1
+		runNum := 1
 
 		//for each line, translate it
 		for scanner.Scan() {
@@ -49,12 +50,13 @@ func main() {
 			case "push":
 				toWrite = WritePush(line, fileName)
 			case "pop":
-				toWrite = WritePop(line, fileName)
+				toWrite = WritePop(line, fileName, runNum)
+				runNum = runNum + 1
 			case "add","sub","and","or", "neg", "not":
 				toWrite = writeArithmetic(line, 0)
 			case "eq", "lt", "gt":
-				toWrite = writeArithmetic(line, count)
-				count = count + 1
+				toWrite = writeArithmetic(line, runNum)
+				runNum = runNum + 1
 			}
 
 			if err2 := scanner.Err(); err2 != nil {
@@ -97,7 +99,7 @@ func GetVmFiles(folder string) []string {
 }
 
 // WritePop write function for pop command
-func WritePop(command []string, fileName string) []string {
+func WritePop(command []string, fileName string, runNum int) []string {
 	var res []string
 	val := command[2]
 	switch command[1] {
@@ -111,16 +113,16 @@ func WritePop(command []string, fileName string) []string {
 		res = append(res,"@THAT\n","D=M\n","@" + val + "\n","D=D+A\n")
 	case "pointer":
 		if val == "0" {
-			res = append(res,"@THIS\n","D=A\n")
+			res = append(res,"@SP\n", "A=M-1\n", "D=M\n", "@THIS\n","M=D\n","@SP\n","M=M-1\n")
 		} else {
-			res = append(res,"@THAT\n","D=A\n")
+			res = append(res,"@SP\n", "A=M-1\n", "D=M\n", "@THAT\n","M=D\n","@SP\n","M=M-1\n")
 		}
 	case "static":
 		res = append(res,"@" + fileName + "." + val + "\n","D=A\n")
 	case "temp":
 		res = append(res,"@R5\n","D=A\n","@" + val +"\n","D=D+A\n")
 	}
-	return append(res,"@R13\n","M=D\n","@SP\n","M=M-1\n","D=M\n","@R13\n","A=M\n","M=D\n")
+	return append(res,fmt.Sprintf("@addr_%d\n",runNum),"M=D\n","@SP\n","M=M-1\n","A=M\n","D=M\n",fmt.Sprintf("@addr_%d\n",runNum),"A=M\n","M=D\n")
 }
 
 // WritePush write function for push command
