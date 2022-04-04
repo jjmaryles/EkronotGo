@@ -57,6 +57,10 @@ func main() {
 			case "eq", "lt", "gt":
 				toWrite = writeArithmetic(line, runNum)
 				runNum = runNum + 1
+			case "//", "\n", "\t", " ", "":
+				toWrite = strings.Split("","")
+			default:
+				toWrite = strings.Split("ERROR\n","")
 			}
 
 			if err2 := scanner.Err(); err2 != nil {
@@ -112,15 +116,11 @@ func WritePop(command []string, fileName string, runNum int) []string {
 	case "that":
 		res = append(res,"@THAT\n","D=M\n","@" + val + "\n","D=D+A\n")
 	case "pointer":
-		if val == "0" {
-			res = append(res,"@SP\n", "A=M-1\n", "D=M\n", "@THIS\n","M=D\n","@SP\n","M=M-1\n")
-		} else {
-			res = append(res,"@SP\n", "A=M-1\n", "D=M\n", "@THAT\n","M=D\n","@SP\n","M=M-1\n")
-		}
+		res = append(res, "@3\n", "D=A\n", "@" + val + "\n", "D=D+A\n")
 	case "static":
 		res = append(res,"@" + fileName + "." + val + "\n","D=A\n")
 	case "temp":
-		res = append(res,"@R5\n","D=A\n","@" + val +"\n","D=D+A\n")
+		res = append(res,"@5\n","D=A\n","@" + val +"\n","D=D+A\n")
 	}
 	return append(res,fmt.Sprintf("@addr_%d\n",runNum),"M=D\n","@SP\n","M=M-1\n","A=M\n","D=M\n",fmt.Sprintf("@addr_%d\n",runNum),"A=M\n","M=D\n")
 }
@@ -133,23 +133,19 @@ func WritePush(command []string, fileName string) []string {
 	case "constant":
 		res = append(res,"@" + val + "\n","D=A\n")
 	case "local":
-		res = append(res,"@LCL\n","D=M\n","@" + val + "\n","A=D+A\n","D=M\n")
+		res = append(res,"@LCL\n","D=M\n","@" + val + "\n","D=D+A\n", "A=D\n","D=M\n")
 	case "argument":
-		res = append(res,"@ARG\n","D=M\n","@" + val + "\n","A=D+A\n","D=M\n")
+		res = append(res,"@ARG\n","D=M\n","@" + val + "\n","D=D+A\n", "A=D\n","D=M\n")
 	case "this":
-		res = append(res,"@THIS\n","D=M\n","@" + val + "\n","A=D+A\n","D=M\n")
+		res = append(res,"@THIS\n","D=M\n","@" + val + "\n","D=D+A\n", "A=D\n","D=M\n")
 	case "that":
-		res = append(res,"@THAT\n","D=M\n","@" + val + "\n","A=D+A\n","D=M\n")
+		res = append(res,"@THAT\n","D=M\n","@" + val + "\n","D=D+A\n", "A=D\n","D=M\n")
 	case "pointer":
-		if val == "0" {
-			res = append(res,"@THIS\n","D=M\n")
-		} else {
-			res = append(res,"@THAT\n","D=M\n")
-		}
+		res = append(res, "@3\n", "D=A\n", "@" + val + "\n", "D=D+A\n", "A=D\n", "D=M\n")
 	case "static":
 		res = append(res,"@" + fileName + "." + val + "\n","D=M\n")
 	case "temp":
-		res = append(res,"@R5\n","D=A\n","@" + val +"\n","A=D+A\n","D=M\n")
+		res = append(res,"@5\n","D=A\n","@" + val +"\n","D=D+A\n", "A=D\n","D=M\n")
 	}
 	return append(res,"@SP\n","A=M\n","M=D\n","@SP\n","M=M+1\n")
 }
@@ -161,15 +157,11 @@ func writeArithmetic(line []string, count int) []string {
 	var strTemp string
 
 	switch firstWord{
-	case "add","sub","and","or":
+	case "add","sub":
 		if firstWord == "add"{
 			strTemp = "D=D+M"
-		} else if firstWord == "sub"{
+		} else if firstWord == "sub" {
 			strTemp = "D=M-D"
-		} else if firstWord == "and"{
-			strTemp = "D=D&M"
-		} else if firstWord == "or"{
-			strTemp = "D=D|M"
 		}
 		res = append(res, "@SP\n")
 		res = append(res, "M=M-1\n")
@@ -179,32 +171,42 @@ func writeArithmetic(line []string, count int) []string {
 		res = append(res,  strTemp)
 		res = append(res, "\n")
 		res = append(res, "M=D\n")
-		res = append(res, "D=A+1\n")
+
+	case "and", "or":
+		if firstWord == "and"{
+			strTemp = "M=D&M"
+		} else if firstWord == "or"{
+			strTemp = "M=D|M"
+		}
 		res = append(res, "@SP\n")
-		res = append(res, "M=D\n")
+		res = append(res, "M=M-1\n")
+		res = append(res, "A=M\n")
+		res = append(res, "D=M\n")
+		res = append(res, "A=A-1\n")
+		res = append(res,  strTemp)
+		res = append(res, "\n")
 
 	case "neg", "not":
 		if firstWord == "neg" {
 			strTemp = "M=-M"
 		}else{
-			strTemp = "M!=M"
+			strTemp = "M=!M"
 		}
 		res = append(res, "@SP\n")
-		res = append(res, "M=M-1\n")
-		res = append(res, "A=M\n")
-		res = append(res,  strTemp)
-		res = append(res, "\n")
-		res = append(res, "D=A+1\n")
-		res = append(res, "@SP\n")
-		res = append(res, "M=D\n")
+		res = append(res, "A=M-1\n")
+		res = append(res,  strTemp + "\n")
 
 	case "eq", "lt", "gt":
+		var lable string
 		if firstWord == "eq"{
 			strTemp = "D;JEQ"
+			lable = "EQ"
 		} else if firstWord == "lt"{
 			strTemp = "D;JLT"
+			lable = "LT"
 		} else if firstWord == "gt"{
 			strTemp = "D;JGT"
+			lable = "GT"
 		}
 		res = append(res, "@SP\n")
 		res = append(res, "M=M-1\n")
@@ -212,27 +214,19 @@ func writeArithmetic(line []string, count int) []string {
 		res = append(res, "D=M\n")
 		res = append(res, "A=A-1\n")
 		res = append(res, "D=M-D\n")
-		res = append(res, fmt.Sprintf("@EQ%d\n", count))
+		res = append(res, fmt.Sprintf("@%s_%d\n",lable, count))
 		res = append(res, strTemp)
 		res = append(res, "\n")
-		res = append(res, "@0\n")
-		res = append(res, "D=-A\n")
 		res = append(res, "@SP\n")
-		res = append(res, "A=M\n")
-		res = append(res, "M=D\n")
-		res = append(res, "@SP\n")
-		res = append(res, "M=M+1\n")
-		res = append(res, fmt.Sprintf("@doneEQ%d\n", count))
+		res = append(res, "A=M-1\n")
+		res = append(res, "M=0\n")
+		res = append(res, fmt.Sprintf("@END_%d\n", count))
 		res = append(res, "0;JMP\n")
-		res = append(res, fmt.Sprintf("EQ%d\n", count))
-		res = append(res, "@1\n")
-		res = append(res, "D=A\n")
+		res = append(res, fmt.Sprintf("(%s_%d)\n", lable, count))
 		res = append(res, "@SP\n")
-		res = append(res, "A=M\n")
-		res = append(res, "M=D\n")
-		res = append(res, "@SP\n")
-		res = append(res, "M=M+1\n")
-		res = append(res, fmt.Sprintf("doneEQ%d\n", count))
+		res = append(res, "A=M-1\n")
+		res = append(res, "M=-1\n")
+		res = append(res, fmt.Sprintf("(END_%d)\n", count))
 
 		count = count + 1
 	}
