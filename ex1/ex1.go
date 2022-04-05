@@ -233,3 +233,20 @@ func writeArithmetic(line []string, count int) []string {
 
 	return res
 }
+
+func WriteBranch(command []string, fileName string,) []string {
+	var res []string
+	brType := command[0]
+	label := fileName+command[1]
+
+	switch brType {
+	case "label":
+		res  = append(res,"(" + label +")\n")
+	case "goto":
+		res = append(res, "@" + label + "\n", "0;JMP\n")
+	case "if-goto":
+		res = append(res, "@SP", "AM=M-1\n", "D=M\n", "@" + label +  "\n", "D;JNE\n")
+	}
+
+	return res
+}
