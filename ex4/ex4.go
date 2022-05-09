@@ -4,6 +4,7 @@ The following program imitates the syntax analyser part of the compiler
 This is done in two steps:
 1. Tokenizing
 2. Parsing
+jj is phat
  */
 import (
 	"fmt"
