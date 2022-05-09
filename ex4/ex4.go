@@ -1,4 +1,4 @@
-package main
+package ex4
 /**
 The following program imitates the syntax analyser part of the compiler
 This is done in two steps:
@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"bufio"
 )
 
 func main() {
@@ -22,8 +23,6 @@ func main() {
 	//create list of ".jack" files
 	jackFiles := GetJackFiles(path)
 
-	//open jackFiles to read from
-	var toWrite []string
 
 	//for each jack file
 	for _, file := range jackFiles {
@@ -42,6 +41,12 @@ func main() {
 
 		defer out.Close()
 
+		scanner := bufio.NewScanner(current)
+
+		for scanner.Scan(){
+			temp := strings.Split(scanner.Text(), " ")
+			line := RemoveSpaces(temp)
+		}
 	}
 
 }
@@ -71,5 +76,10 @@ func GetJackFiles(folder string) []string {
 			res = append(res, file)
 		}
 	}
+	return res
+}
+
+func RemoveSpaces(line []string) string {
+	res := strings.Join(line,"")
 	return res
 }
