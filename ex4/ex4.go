@@ -1,4 +1,4 @@
-package ex4
+package main
 /**
 The following program imitates the syntax analyser part of the compiler
 This is done in two steps:
@@ -12,7 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"bufio"
+	"regexp"
 )
 
 func main() {
@@ -24,7 +24,9 @@ func main() {
 	//create list of ".jack" files
 	jackFiles := GetJackFiles(path)
 
+	//open jackFiles to read from
 	var toWrite []string
+
 	//for each jack file
 	for _, file := range jackFiles {
 		current, err2 := os.Open(file)
@@ -34,7 +36,7 @@ func main() {
 		defer current.Close()
 
 		//create a corresponding xml file for translation
-		currentOut := filepath.Base(NoSuffix(file)) + "T.xml"
+		currentOut := filepath.Base(NoSuffix(file)) + ".xml"
 		out, err1 := os.Create(currentOut)
 		if err1 != nil {
 			log.Fatal(err1)
@@ -42,16 +44,11 @@ func main() {
 
 		defer out.Close()
 
-		scanner := bufio.NewScanner(current)
-
-		for scanner.Scan(){
-			temp := strings.Split(scanner.Text(), " ")
-			line := RemoveSpaces(temp)
-			toWrite = append(toWrite, "<tokens>\n",
-				strings.Join(tokenize(line),"") + "\n",
-				"</tokens>")
-		}
 	}
+	rKeyword := regexp.MustCompile("class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return")
+	rSymbol := regexp.MustCompile("\\{ | \\} | \\( | \\) | \\[ | \\] | \\. | , | ; | \\+ | \\- | \\* | / | \\| |<|>|=|~")
+	rIntConst, _ :=  regexp.MustCompile("[0-9][0-9]")
+	rStrConst, _ :=  regexp.MustCompile("\"\P{}\"")
 
 }
 
@@ -80,15 +77,5 @@ func GetJackFiles(folder string) []string {
 			res = append(res, file)
 		}
 	}
-	return res
-}
-
-func RemoveSpaces(line []string) string {
-	res := strings.Join(line,"")
-	return res
-}
-
-func tokenize(line string) []string{
-	res := []string{"nothing","for","now"}
 	return res
 }

@@ -1,4 +1,4 @@
-package main
+package ex0
 
 //C:\Users\jjmar\GolandProjects\Go-Compiler\ex0
 import (
