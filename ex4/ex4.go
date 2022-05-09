@@ -23,7 +23,7 @@ func main() {
 	//create list of ".jack" files
 	jackFiles := GetJackFiles(path)
 
-
+	var toWrite []string
 	//for each jack file
 	for _, file := range jackFiles {
 		current, err2 := os.Open(file)
@@ -46,6 +46,9 @@ func main() {
 		for scanner.Scan(){
 			temp := strings.Split(scanner.Text(), " ")
 			line := RemoveSpaces(temp)
+			toWrite = append(toWrite, "<tokens>\n",
+				strings.Join(tokenize(line),"") + "\n",
+				"</tokens>")
 		}
 	}
 
@@ -81,5 +84,10 @@ func GetJackFiles(folder string) []string {
 
 func RemoveSpaces(line []string) string {
 	res := strings.Join(line,"")
+	return res
+}
+
+func tokenize(line string) []string{
+	res := []string{"nothing","for","now"}
 	return res
 }
