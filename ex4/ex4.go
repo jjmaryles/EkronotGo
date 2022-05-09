@@ -33,7 +33,7 @@ func main() {
 		defer current.Close()
 
 		//create a corresponding xml file for translation
-		currentOut := filepath.Base(NoSuffix(file)) + ".xml"
+		currentOut := filepath.Base(NoSuffix(file)) + "T.xml"
 		out, err1 := os.Create(currentOut)
 		if err1 != nil {
 			log.Fatal(err1)
