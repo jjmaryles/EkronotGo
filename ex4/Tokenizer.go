@@ -1,10 +1,10 @@
-package main
+package ex4
 
 import (
 	"errors"
 	"nand2tetris-golang/common/parser"
 	"nand2tetris-golang/common/utils"
-	"nand2tetris-golang/compiler/validators"
+	"jjmaryles/EkronotGo/ex4/Validators"
 	"strings"
 )
 

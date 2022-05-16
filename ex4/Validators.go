@@ -1,4 +1,4 @@
-package main
+package ex4
 
 import(
 	"strings"

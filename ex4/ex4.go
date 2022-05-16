@@ -1,4 +1,4 @@
-package main
+package ex4
 /**
 The following program imitates the syntax analyser part of the compiler
 This is done in two steps:
@@ -45,7 +45,7 @@ func main() {
 		defer out.Close()
 
 	}
-	
+
 	/*
 	rKeyword := regexp.MustCompile("class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return")
 	rSymbol := regexp.MustCompile("\\{ | \\} | \\( | \\) | \\[ | \\] | \\. | , | ; | \\+ | \\- | \\* | / | \\| |<|>|=|~")
