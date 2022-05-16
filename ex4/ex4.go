@@ -45,10 +45,13 @@ func main() {
 		defer out.Close()
 
 	}
+	
+	/*
 	rKeyword := regexp.MustCompile("class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return")
 	rSymbol := regexp.MustCompile("\\{ | \\} | \\( | \\) | \\[ | \\] | \\. | , | ; | \\+ | \\- | \\* | / | \\| |<|>|=|~")
 	rIntConst, _ :=  regexp.MustCompile("[0-9][0-9]")
 	rStrConst, _ :=  regexp.MustCompile("\"\P{}\"")
+	 */
 
 }
 
