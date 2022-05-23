@@ -1,8 +1,6 @@
 package ex4
 
-import(
-	"strings"
-)
+import "strings"
 
 // Rule type
 type Rule func(s string) bool

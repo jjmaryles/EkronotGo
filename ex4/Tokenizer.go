@@ -2,13 +2,10 @@ package ex4
 
 import (
 	"errors"
-	"nand2tetris-golang/common/parser"
-	"nand2tetris-golang/common/utils"
-	"jjmaryles/EkronotGo/ex4/Validators"
-	"strings"
+	"go/parser"
 )
 
-// Token types
+/ Token types
 const (
 	TokenTypeKeyword        = "keyword"
 	TokenTypeSymbol         = "symbol"
@@ -102,27 +99,28 @@ func GetTokens(sourceFile string) *Tokens {
 				newChar = chars[i]
 			}
 
-			if _, in := keywords[t]; in && !validators.IsIdentifier(string(newChar)) {
+			if _, in := keywords[t]; in && !IsIdentifier(string(newChar)) {
 				// is keyword
 				tokenList = append(tokenList, Token{t, TokenTypeKeyword})
 				t = ""
 			} else if _, in := symbols[t]; in && (t != "/" || newChar != '*') {
-				// is symbol (not / followed by * as block cocmment)
+				// is symbol (not / followed by * as block comment)
 				tokenList = append(tokenList, Token{t, TokenTypeSymbol})
 				t = ""
-			} else if validators.IsString(t) {
+			} else if IsString(t) {
 				// is string, append excluding double quotes
-				tokenList = append(tokenList, Token{t[1 : len(t)-1], TokenTypeStringConstant})
+				temp := t[1:]
+				tokenList = append(tokenList, Token{temp[:len(t)-1], TokenTypeStringConstant})
 				t = ""
-			} else if validators.IsIdentifier(t) && !validators.IsNonFirstCharOfIdentifier(newChar) {
+			} else if IsIdentifier(t) && !IsNonFirstCharOfIdentifier(newChar) {
 				// is identifier
 				tokenList = append(tokenList, Token{t, TokenTypeIdentifier})
 				t = ""
-			} else if validators.IsInt(t) && (newChar < '0' || newChar > '9') {
+			} else if IsInt(t) && (newChar < '0' || newChar > '9') {
 				// is int
 				tokenList = append(tokenList, Token{t, TokenTypeIntConstant})
 				t = ""
-			} else if validators.IsBlockComment(t) {
+			} else if IsBlockComment(t) {
 				// is block comment, remove
 				t = ""
 			}
@@ -151,7 +149,7 @@ func ToXML(tList *Tokens) string {
 		if err != nil {
 			break
 		}
-		tokens += utils.ToXMLTag(t.T, " "+t.S+" ") + eol
+		tokens += ToXMLTag(t.T, " "+t.S+" ") + eol
 		tList.Next()
 	}
 
